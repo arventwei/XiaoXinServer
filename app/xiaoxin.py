@@ -6,13 +6,14 @@ from app import app
 @app.route('/xiaoxin/<action>', methods=['GET', 'POST'])
 def xiaoxin(action):
     #return "Failed"
-    print request.json
+    ret="==-=-=-=-=-=-=-="
+   # print request.json
     if request != None:
-        print request.json
-    print "=========================="
+        ret+= str(request.data).lower()
+    ret+= "=========================="
     #if action =="config":
     #    return xiaoxin_config(request.json)
-    return "ok"
+    return ret
     #return "Hello, World !"+action
 
 def xiaoxin_config(content):
