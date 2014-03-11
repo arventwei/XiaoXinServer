@@ -1,6 +1,4 @@
 eclipse.preferences.version=1
+encoding//app/__init__.py=utf-8
 encoding//app/log.py=utf-8
-encoding//app/mobile.py=utf-8
-encoding//app/models.py=utf-8
-encoding//app/xiaoxin.py=utf-8
 encoding/run.py=utf-8
