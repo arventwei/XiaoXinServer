@@ -13,44 +13,38 @@ Created on 2014-3-10
 import time
 from log import info,debug,log
 from peewee import *
-from app import database
+from app import db
 
 class xiaoxin(Model):
     
-    id = CharField()
+    sn = CharField(primary_key=True)
+    bind_userid = CharField()
+    bind_time   = DateTimeField()
+    temp = FloatField()
+    humi = FloatField()
+    pm25 = FloatField()
     
     class Meta:
-        database = database
+        database = db
         
-class xiaoxin(db.Model):
+#
+class user(Model):
     
-    id = db.Column(db.Integer, primary_key=True)                                                   
-    sn = Column(String(20), unique=True)
-    bind_userid = Column(String(20))
-    bind_time = Column(Integer)
+    #id = PrimaryKeyField()   
+    userid = CharField(primary_key=True)
     
-    temp = Column(Float)
-    humi = Column(Float)
-    pm25 = Column(Float)
-                                                              
-    def __init__(self, sn=None, bind_userid=None):
-        self.sn = sn
-        self.bind_userid = bind_userid
-                                                              
-    def __repr__(self):
-        return '%s (%r, %r)' % (self.__class__.__name__, self.sn, self.bind_userid)
-
-
-class user(Base):
-    __tablename__ = 'user'
-    
-    id = Column(Integer, primary_key=True)   
-    userid = Column(String(20), unique=True)
-    
-    def __init__(self,userid):
-        self.userid=userid
+    class Meta:
+        database = db
         
-    def __repr__(self):
-        return '%s (%r)' % (self.__class__.__name__, self.userid)
+#       
+class xiaoxin_user(Model):
+    
+    id = PrimaryKeyField()   
+    xiaoxin_sn = ForeignKeyField(xiaoxin, related_name='users')
+    userid = CharField(primary_key=True)
+    
+    class Meta:
+        database = db
+
     
 

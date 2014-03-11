@@ -10,7 +10,7 @@ from flask import url_for, abort, render_template, flash
 from functools import wraps
 from hashlib import md5
 from peewee import *
-
+from models import xiaoxin,user,xiaoxin_user
 # config - aside from our database, the rest is for use by Flask
 DATABASE = 'xiaoxin.db'
 DEBUG = True
@@ -23,7 +23,7 @@ app.config.from_object(__name__)
 
 # create a peewee database instance -- our models will use this database to
 # persist information
-database = SqliteDatabase(DATABASE)
+db = SqliteDatabase(DATABASE)
 
 
 # request handlers -- these two hooks are provided by flask and we will use them
@@ -31,7 +31,7 @@ database = SqliteDatabase(DATABASE)
 # this for us, but its generally a good idea to be explicit.
 @app.before_request
 def before_request():
-    g.db = database
+    g.db = db
     g.db.connect()
 
 @app.after_request
@@ -39,7 +39,13 @@ def after_request(response):
     g.db.close()
     return response
     
-
+# simple utility function to create tables
+def create_tables():
+    db.connect()
+    xiaoxin.create_table()
+    user.create_table()
+    xiaoxin_user.create_table()
+    
 @app.route('/')
 def index():
     return 'Index Page'
