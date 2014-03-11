@@ -116,10 +116,10 @@ def print_xiaoxin_help():
     接口如下：<br>
     3.1.小新配置接口  /xiaoxin/config<br>
        1 当小新设置按钮按下时，小新等待手机的WIFI配置信息，<br>
-       2 当小新配置完毕后，就是保存sn和userid.连接WIFI网络，并把这两个值发给服务器。<br>
+       2 当小新配置完毕后，保存sn和userid.连接WIFI网络，并把这两个值发给服务器。<br>
        3 发送格式如下 sn=123456123&userid=sina_123456 ,注意 sn和userid都是小写<br>
        4 测试例子：<br>
-       curl --data "sn=123456123&userid=sina_123456" http://127.0.0.1:9999/xiaoxin/config<br>
+       curl --data "sn=123456123&userid=sina_123456" http://211.103.161.120:9999/xiaoxin/config<br>
        <br>
 
     3.2.小新提交数据接口 /xiaoxin/upload<br>
@@ -128,7 +128,7 @@ def print_xiaoxin_help():
        3. 手机的WIFI入口固定为 name:xiaoxin_mobile   password:1234$#@!xiaoxin<br>
        4.连接到网络后，发送信息给服务器，主要是，温度(temp),湿度(humi),pm25(pm25)<br>
        5.测试例子：<br>
-       curl --data "sn=123456123&temp=20.5&humi=30&pm25=100" http://127.0.0.1:9999/xiaoxin/upload<br>
+       curl --data "sn=123456123&temp=20.5&humi=30&pm25=100" http://211.103.161.120:9999/xiaoxin/upload<br>
     """;
     
     return ret;
