@@ -161,9 +161,8 @@ def xiaoxin_config(form):
         _sn = getformValue(form,"sn")
         _userid =getformValue(form,"userid")
         
-    
+        xiaoxin = Xiaoxin.get_or_create(sn=_sn)
         
-        xiaoxin = Xiaoxin(sn=_sn)
         xiaoxin.bind_userid=_userid
         xiaoxin.bind_time = datetime.datetime.now()
         xiaoxin.save()
@@ -181,7 +180,7 @@ def xiaoxin_upload(form):
         _pm25 =getformValue(form,"pm25")
         
     
-        xiaoxin = Xiaoxin.get(Xiaoxin.sn == _sn)
+        xiaoxin = Xiaoxin.get_or_create(sn = _sn)
   
         xiaoxin.temp = _temp
         xiaoxin.humi = _humi
