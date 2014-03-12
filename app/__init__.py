@@ -36,7 +36,7 @@ class Xiaoxin(Model):
     temp = FloatField(default=20)
     humi = FloatField(default=20)
     pm25 = FloatField(default=20)
-    
+    last_upload_time   = DateTimeField(default=datetime.datetime.now())
     class Meta:
         database = db
         
@@ -132,7 +132,28 @@ def print_xiaoxin_help():
     """;
     
     return ret;
+def print_mobile_help():
+    ret =  """
+    <br>
+    APP接口说明：<br>
+    <br>
+    接口如下：<br>
+
+
+    3.1.手机用户登录 /mobile/login<br>
+       1. App启动后,发送userid和用户信息给服务器<br>
+       2. 服务器接受后，保存信息返回Fail或Ok<br>
+       3.测试例子：<br>
+       curl --data "userid=123456123&age=20.5&gender=1&name=xxx" http://211.103.161.120:9999/mobile/upload<br>
+       
+    3.2.获取小新数据 /mobile/getxiaoxin<br>
+       1. App启动后,发送userid和sn信息给服务器<br>
+       2. 服务器接受后，返回小新信息<br>
+       3.测试例子：<br>
+       curl --data "userid=123456123&sn=20.5" http://211.103.161.120:9999/mobile/getxiaoxin<br>
+    """;
     
+    return ret;
 def getformValue(form,name):
     if name not in form.keys():
         debug(name+" is null");
@@ -144,7 +165,7 @@ def route_xiaoxin(action):
     
     #return "Failed"
     if request.method == "GET":
-        return print_xiaoxin_help();
+        return print_mobile_help();
    
     info(request.form)
     
@@ -185,11 +206,51 @@ def xiaoxin_upload(form):
         xiaoxin.temp = _temp
         xiaoxin.humi = _humi
         xiaoxin.pm25 = _pm25
+        xiaoxin.last_upload_time = datetime.datetime.now()
         xiaoxin.save()
     except Exception as e:
         debug(e)
         return "Fail"
 
     return "Ok"
+
+def mobile_login(form):
+    try:
+        _sn = getformValue(form,"sn")
+        _temp =getformValue(form,"temp")
+        _humi =getformValue(form,"humi")
+        _pm25 =getformValue(form,"pm25")
+        
+    except Exception as e:
+        debug(e)
+        return "Fail"
+
+    return "Ok"
+
+def mobile_getxiaoxin(form):
+    try:
+        _sn = getformValue(form,"sn")
+        _temp =getformValue(form,"temp")
+        _humi =getformValue(form,"humi")
+        _pm25 =getformValue(form,"pm25")
+        
+    except Exception as e:
+        debug(e)
+        return "Fail"
+
+    return "Ok"
     
+@app.route('/mobile/<action>', methods=['GET', 'POST'])
+def route_mobile(action):
+    
+    #return "Failed"
+    if request.method == "GET":
+        return print_mobile_help();
+   
+    info(request.form)
+    
+    if action == "login":
+        return mobile_login(request.form)
+    elif action=="upload":
+        return mobile_getxiaoxin(request.form)
     
