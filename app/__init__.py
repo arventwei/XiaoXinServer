@@ -45,9 +45,9 @@ class User(Model):
     
     #id = PrimaryKeyField()   
     userid = CharField(unique=True)
-    name=CharField()
-    age=IntegerField()
-    gender=IntegerField()
+    name=CharField(default="")
+    age=IntegerField(default=0)
+    gender=IntegerField(default=0)
     
     
     class Meta:
@@ -89,7 +89,7 @@ def create_tables():
     
 @app.route('/')
 def route_index():
-    return 'Index Page<br>'+print_xiaoxin_help()
+    return print_xiaoxin_help()+print_mobile_help()
 
 @app.route('/install')
 def route_install():
@@ -119,7 +119,7 @@ def print_xiaoxin_help():
        2 当小新配置完毕后，保存sn和userid.连接WIFI网络，并把这两个值发给服务器。<br>
        3 发送格式如下 sn=123456123&userid=sina_123456 ,注意 sn和userid都是小写<br>
        4 测试例子：<br>
-       curl --data "sn=123456123&userid=sina_123456" http://211.103.161.120:9999/xiaoxin/config<br>
+       curl --data "sn=111&userid=sina_123456" http://211.103.161.120:9999/xiaoxin/config<br>
        <br>
 
     3.2.小新提交数据接口 /xiaoxin/upload<br>
@@ -144,13 +144,27 @@ def print_mobile_help():
        1. App启动后,发送userid和用户信息给服务器<br>
        2. 服务器接受后，保存信息返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=123456123&age=20.5&gender=1&name=xxx" http://211.103.161.120:9999/mobile/upload<br>
-       
-    3.2.获取小新数据 /mobile/getxiaoxin<br>
-       1. App启动后,发送userid和sn信息给服务器<br>
-       2. 服务器接受后，返回小新信息<br>
+       curl --data "userid=123456123&age=20.5&gender=1&name=xxx" http://211.103.161.120:9999/mobile/login<br><br>
+    3.1.用户绑定小新 /mobile/bind<br>
+       1. 发送userid和sn给服务器<br>
+       2. 服务器接受后，保存信息返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=123456123&sn=20.5" http://211.103.161.120:9999/mobile/getxiaoxin<br>
+       curl --data "userid=123456123&sn=12345" http://211.103.161.120:9999/mobile/bind<br><br>
+    3.2.用户解除绑定小新 /mobile/bind<br>
+       1. 发送userid和sn给服务器<br>
+       2. 服务器接受后，返回Fail或Ok<br>
+       3.测试例子：<br>
+       curl --data "userid=123456123&sn=12345" http://211.103.161.120:9999/mobile/unbind<br><br>
+    3.2.用户查询小新列表 /mobile/bind<br>
+       1. 发送userid给服务器<br>
+       2. 服务器接受后，返回Fail或列表信息<br>
+       3.测试例子：<br>
+       curl --data "userid=111" http://211.103.161.120:9999/mobile/query_bindlist<br>  <br>
+    3.3.获取小新数据 /mobile/getxiaoxin<br>
+       1. 发送sn信息给服务器<br>
+       2. 服务器接受后，回Fail或小新信息<br>
+       3.测试例子：<br>
+       curl --data "sn=111" http://211.103.161.120:9999/mobile/getxiaoxin<br><br>
     """;
     
     return ret;
@@ -173,7 +187,7 @@ def route_xiaoxin(action):
         return xiaoxin_config(request.form)
     elif action=="upload":
         return xiaoxin_upload(request.form)
-    
+    return "Fail"
     
    
 
@@ -187,10 +201,11 @@ def xiaoxin_config(form):
         xiaoxin.bind_userid=_userid
         xiaoxin.bind_time = datetime.datetime.now()
         xiaoxin.save()
+        return "Ok"
     except Exception as e:
         debug(e)
-        return "Fail"
-    return "Ok"
+    return "Fail"
+    
 
 
 def xiaoxin_upload(form):
@@ -208,37 +223,81 @@ def xiaoxin_upload(form):
         xiaoxin.pm25 = _pm25
         xiaoxin.last_upload_time = datetime.datetime.now()
         xiaoxin.save()
+        return "Ok"
     except Exception as e:
         debug(e)
-        return "Fail"
-
-    return "Ok"
+        
+    return "Fail"
+    
 
 def mobile_login(form):
     try:
-        _sn = getformValue(form,"sn")
-        _temp =getformValue(form,"temp")
-        _humi =getformValue(form,"humi")
-        _pm25 =getformValue(form,"pm25")
-        
+       
+        _userid =getformValue(form,"userid")
+        user = User.get_or_create(userid=_userid)
+        user.save()
+        return "Ok"
     except Exception as e:
         debug(e)
-        return "Fail"
+        
+    return "Fail"
+    
 
-    return "Ok"
+def mobile_bind(form):
+    try:
+        _sn = getformValue(form,"sn")
+        _userid =getformValue(form,"userid")
+        usr = User.get(User.userid == _userid)
+        xx = Xiaoxin.get(Xiaoxin.sn == _sn)
+        user_xiaoxin = XiaoxinUser.get_or_create(user=usr,xiaoxin=xx)
+        user_xiaoxin.save()
+        return "Ok"
+    except Exception as e:
+        debug(e)
+        
+    return "Fail"
+
+def mobile_unbind(form):
+    try:
+        _sn = getformValue(form,"sn")
+        _userid =getformValue(form,"userid")
+        usr = User.get(User.userid == _userid)
+        xx = Xiaoxin.get(Xiaoxin.sn == _sn)
+        user_xiaoxin = XiaoxinUser.get(XiaoxinUser.user==usr,XiaoxinUser.xiaoxin==xx)
+        user_xiaoxin.delete_instance()
+        return "Ok"
+    except Exception as e:
+        debug(e)
+        
+    return "Fail"
+
+def mobile_query_bindlist(form):
+    try:
+        _userid =getformValue(form,"userid")
+        usr = User.get(User.userid == _userid)
+        ret="count=%d" % usr.xiaoxins.count();
+        
+        i=0
+        for xx_usr in usr.xiaoxins:
+            
+            ret+="&sn%d=%s" % (i,xx_usr.xiaoxin.sn)
+        return ret
+    except Exception as e:
+        debug(e)
+        
+    return "Fail"    
+
 
 def mobile_getxiaoxin(form):
     try:
         _sn = getformValue(form,"sn")
-        _temp =getformValue(form,"temp")
-        _humi =getformValue(form,"humi")
-        _pm25 =getformValue(form,"pm25")
-        
+        xx = Xiaoxin.get(Xiaoxin.sn == _sn)
+        return "temp=%f&humi=%f&pm25=%f"%(xx.temp,xx.humi,xx.pm25);
     except Exception as e:
         debug(e)
-        return "Fail"
+        
 
-    return "Ok"
+    return "Fail"
     
 @app.route('/mobile/<action>', methods=['GET', 'POST'])
 def route_mobile(action):
@@ -251,6 +310,12 @@ def route_mobile(action):
     
     if action == "login":
         return mobile_login(request.form)
-    elif action=="upload":
+    elif action=="getxiaoxin":
         return mobile_getxiaoxin(request.form)
-    
+    elif action=="bind":
+        return mobile_bind(request.form)
+    elif action=="unbind":
+        return mobile_unbind(request.form)
+    elif action=="query_bindlist":
+        return mobile_query_bindlist(request.form)
+    return "Fail"
