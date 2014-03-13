@@ -150,12 +150,12 @@ def print_mobile_help():
        2. 服务器接受后，保存信息返回Fail或Ok<br>
        3.测试例子：<br>
        curl --data "userid=123456123&sn=12345" http://211.103.161.120:9999/mobile/bind<br><br>
-    3.2.用户解除绑定小新 /mobile/bind<br>
+    3.2.用户解除绑定小新 /mobile/unbind<br>
        1. 发送userid和sn给服务器<br>
        2. 服务器接受后，返回Fail或Ok<br>
        3.测试例子：<br>
        curl --data "userid=123456123&sn=12345" http://211.103.161.120:9999/mobile/unbind<br><br>
-    3.2.用户查询小新列表 /mobile/bind<br>
+    3.2.用户查询小新列表 /mobile/query_bindlist<br>
        1. 发送userid给服务器<br>
        2. 服务器接受后，返回Fail或列表信息<br>
        3.测试例子：<br>
@@ -292,7 +292,7 @@ def mobile_getxiaoxin(form):
     try:
         _sn = getformValue(form,"sn")
         xx = Xiaoxin.get(Xiaoxin.sn == _sn)
-        return "temp=%f&humi=%f&pm25=%f"%(xx.temp,xx.humi,xx.pm25);
+        return "temp=%f&humi=%f&pm25=%f" % (xx.temp,xx.humi,xx.pm25);
     except Exception as e:
         debug(e)
         
