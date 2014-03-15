@@ -37,6 +37,10 @@ class Xiaoxin(Model):
     humi = FloatField(default=20)
     pm25 = FloatField(default=20)
     last_upload_time   = DateTimeField(default=datetime.datetime.now())
+    
+    #set by mobile, get by xiaoxin
+    switch = BooleanField(default=True)
+    speed  = IntegerField(default=1)
     class Meta:
         database = db
         
@@ -117,7 +121,7 @@ def print_xiaoxin_help():
     3.1.小新配置接口  /xiaoxin/config<br>
        1 当小新设置按钮按下时，小新等待手机的WIFI配置信息，<br>
        2 当小新配置完毕后，保存sn和userid.连接WIFI网络，并把这两个值发给服务器。<br>
-       3 发送格式如下 sn=123456123&userid=sina_123456 ,注意 sn和userid都是小写<br>
+       3 发送格式如下 sn=111&userid=sina_123456 ,注意 sn和userid都是小写<br>
        4 测试例子：<br>
        curl --data "sn=111&userid=sina_123456" http://211.103.161.120:9999/xiaoxin/config<br>
        <br>
@@ -128,7 +132,13 @@ def print_xiaoxin_help():
        3. 手机的WIFI入口固定为 name:xiaoxin_mobile   password:1234$#@!xiaoxin<br>
        4.连接到网络后，发送信息给服务器，主要是，温度(temp),湿度(humi),pm25(pm25)<br>
        5.测试例子：<br>
-       curl --data "sn=123456123&temp=20.5&humi=30&pm25=100" http://211.103.161.120:9999/xiaoxin/upload<br>
+       curl --data "sn=111&temp=20.5&humi=30&pm25=100" http://211.103.161.120:9999/xiaoxin/upload<br>
+       
+    3.3.小新查询状态接口 /xiaoxin/status<br>
+       1. 返回是否开关，和风速信息 格式如: switch=0&speed=1<br>
+       2 0表示关，1表示开<br>
+       5.测试例子：<br>
+       curl --data "sn=111" http://211.103.161.120:9999/xiaoxin/status<br>
     """;
     
     return ret;
@@ -187,6 +197,9 @@ def route_xiaoxin(action):
         return xiaoxin_config(request.form)
     elif action=="upload":
         return xiaoxin_upload(request.form)
+    elif action=="status":
+        return xiaoxin_status(request.form)
+    
     return "Fail"
     
    
@@ -206,7 +219,18 @@ def xiaoxin_config(form):
         debug(e)
     return "Fail"
     
-
+def xiaoxin_status(form):
+    try:   
+        _sn = getformValue(form,"sn")
+        
+        xiaoxin = Xiaoxin.get(Xiaoxin.sn==_sn)
+        cur_switch = xiaoxin.switch
+        xiaoxin.switch=True
+        xiaoxin.save()
+        return "switch=%i&speed=%d" % (cur_switch,xiaoxin.speed)
+    except Exception as e:
+        debug(e)
+    return "Fail"
 
 def xiaoxin_upload(form):
     try:
