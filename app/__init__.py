@@ -91,9 +91,9 @@ def after_request(response):
 # simple utility function to create tables
 def create_tables():
     db.connect()
-    Xiaoxin.create_table(True)
-    User.create_table(True)
-    XiaoxinUser.create_table(True)
+    Xiaoxin.create_table()
+    User.create_table()
+    XiaoxinUser.create_table()
     
 @app.route('/')
 def route_index():
