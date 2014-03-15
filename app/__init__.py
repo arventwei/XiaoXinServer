@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import datetime
+import time
 
 from flask import Flask
 from flask import g
@@ -12,6 +13,8 @@ from functools import wraps
 from hashlib import md5
 from peewee import *
 from log import info,debug,log
+from config import localip
+
 
 # config - aside from our database, the rest is for use by Flask
 DATABASE = 'xiaoxin.db'
@@ -36,7 +39,7 @@ class Xiaoxin(Model):
     temp = FloatField(default=20)
     humi = FloatField(default=20)
     pm25 = FloatField(default=20)
-    last_upload_time   = DateTimeField(default=datetime.datetime.now())
+    last_upload_time   = FloatField(default=time.time())
     
     #set by mobile, get by xiaoxin
     switch = BooleanField(default=True)
@@ -107,7 +110,7 @@ def print_xiaoxin_help():
     <br>
     小新接口说明：<br>
     1.请使用POST方式提交数据，格式如下<br>
-    POST http://211.103.161.120:9999/xiaoxin/config HTTP/1.1<br>
+    POST http://"""+localip+""":9999/xiaoxin/config HTTP/1.1<br>
     Content-Type: application/x-www-form-urlencoded;charset=utf-8<br>
     sn=123456123&userid=sina_123456<br>
     注意:数据提交不是json格式了，而是采用简单的form表单形式，主要是我们的数据比较简单，JSON比较复杂。<br>
@@ -123,7 +126,7 @@ def print_xiaoxin_help():
        2 当小新配置完毕后，保存sn和userid.连接WIFI网络，并把这两个值发给服务器。<br>
        3 发送格式如下 sn=111&userid=sina_123456 ,注意 sn和userid都是小写<br>
        4 测试例子：<br>
-       curl --data "sn=111&userid=sina_123456" http://211.103.161.120:9999/xiaoxin/config<br>
+       curl --data "sn=111&userid=sina_123456" http://"""+localip+""":9999/xiaoxin/config<br>
        <br>
 
     3.2.小新提交数据接口 /xiaoxin/upload<br>
@@ -132,13 +135,13 @@ def print_xiaoxin_help():
        3. 手机的WIFI入口固定为 name:xiaoxin_mobile   password:1234$#@!xiaoxin<br>
        4.连接到网络后，发送信息给服务器，主要是，温度(temp),湿度(humi),pm25(pm25)<br>
        5.测试例子：<br>
-       curl --data "sn=111&temp=20.5&humi=30&pm25=100" http://211.103.161.120:9999/xiaoxin/upload<br>
-       
+       curl --data "sn=111&temp=20.5&humi=30&pm25=100" http://"""+localip+""":9999/xiaoxin/upload<br>
+       <br>
     3.3.小新查询状态接口 /xiaoxin/status<br>
        1. 返回是否开关，和风速信息 格式如: switch=0&speed=1<br>
        2 0表示关，1表示开<br>
        5.测试例子：<br>
-       curl --data "sn=111" http://211.103.161.120:9999/xiaoxin/status<br>
+       curl --data "sn=111" http://"""+localip+""":9999/xiaoxin/status<br>
     """;
     
     return ret;
@@ -154,27 +157,27 @@ def print_mobile_help():
        1. App启动后,发送userid和用户信息给服务器<br>
        2. 服务器接受后，保存信息返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=123456123&age=20.5&gender=1&name=xxx" http://211.103.161.120:9999/mobile/login<br><br>
+       curl --data "userid=sina_123456&age=20.5&gender=1&name=xxx" http://"""+localip+""":9999/mobile/login<br><br>
     3.1.用户绑定小新 /mobile/bind<br>
        1. 发送userid和sn给服务器<br>
        2. 服务器接受后，保存信息返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=123456123&sn=12345" http://211.103.161.120:9999/mobile/bind<br><br>
+       curl --data "userid=sina_123456&sn=111" http://"""+localip+""":9999/mobile/bind<br><br>
     3.2.用户解除绑定小新 /mobile/unbind<br>
        1. 发送userid和sn给服务器<br>
        2. 服务器接受后，返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=123456123&sn=12345" http://211.103.161.120:9999/mobile/unbind<br><br>
+       curl --data "userid=sina_123456&sn=111" http://"""+localip+""":9999/mobile/unbind<br><br>
     3.2.用户查询小新列表 /mobile/query_bindlist<br>
        1. 发送userid给服务器<br>
        2. 服务器接受后，返回Fail或列表信息<br>
        3.测试例子：<br>
-       curl --data "userid=111" http://211.103.161.120:9999/mobile/query_bindlist<br>  <br>
+       curl --data "userid=sina_123456" http://"""+localip+""":9999/mobile/query_bindlist<br>  <br>
     3.3.获取小新数据 /mobile/getxiaoxin<br>
        1. 发送sn信息给服务器<br>
        2. 服务器接受后，回Fail或小新信息<br>
        3.测试例子：<br>
-       curl --data "sn=111" http://211.103.161.120:9999/mobile/getxiaoxin<br><br>
+       curl --data "sn=111" http://"""+localip+""":9999/mobile/getxiaoxin<br><br>
     """;
     
     return ret;
@@ -225,8 +228,8 @@ def xiaoxin_status(form):
         
         xiaoxin = Xiaoxin.get(Xiaoxin.sn==_sn)
         cur_switch = xiaoxin.switch
-        xiaoxin.switch=True
-        xiaoxin.save()
+        #xiaoxin.switch=True
+        #xiaoxin.save()
         return "switch=%i&speed=%d" % (cur_switch,xiaoxin.speed)
     except Exception as e:
         debug(e)
@@ -245,7 +248,7 @@ def xiaoxin_upload(form):
         xiaoxin.temp = _temp
         xiaoxin.humi = _humi
         xiaoxin.pm25 = _pm25
-        xiaoxin.last_upload_time = datetime.datetime.now()
+        xiaoxin.last_upload_time = time.time()
         xiaoxin.save()
         return "Ok"
     except Exception as e:
@@ -316,7 +319,7 @@ def mobile_getxiaoxin(form):
     try:
         _sn = getformValue(form,"sn")
         xx = Xiaoxin.get(Xiaoxin.sn == _sn)
-        return "temp=%f&humi=%f&pm25=%f" % (xx.temp,xx.humi,xx.pm25);
+        return "temp=%g&humi=%g&pm25=%g&switch=%d&speed=%d&last_upload_time=%g" % (xx.temp,xx.humi,xx.pm25,xx.switch,xx.speed,xx.last_upload_time);
     except Exception as e:
         debug(e)
         
