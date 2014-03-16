@@ -34,6 +34,7 @@ db = SqliteDatabase(DATABASE)
 class Xiaoxin(Model):
     
     sn = CharField(unique=True)
+    name=CharField(default="小新")
     bind_userid = CharField(default="")
     bind_time   = DateTimeField(default=datetime.datetime.now())
     temp = FloatField(default=20)
