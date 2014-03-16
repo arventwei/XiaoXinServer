@@ -194,7 +194,7 @@ def route_xiaoxin(action):
     if request.method == "GET":
         return print_mobile_help();
    
-    info(request.form)
+    info(action+":"+request.form)
     
     if action == "config":
         return xiaoxin_config(request.form)
@@ -333,7 +333,7 @@ def route_mobile(action):
     if request.method == "GET":
         return print_mobile_help();
    
-    info(request.form)
+    info(action+":"+request.form)
     
     if action == "login":
         return mobile_login(request.form)
