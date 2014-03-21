@@ -127,7 +127,7 @@ def print_xiaoxin_help():
        2 当小新配置完毕后，保存sn和userid.连接WIFI网络，并把这两个值发给服务器。<br>
        3 发送格式如下 sn=111&userid=sina_123456 ,注意 sn和userid都是小写<br>
        4 测试例子：<br>
-       curl --data "sn=111&userid=sina_123456" http://"""+localip+""":9999/xiaoxin/config<br>
+       curl --data "sn=111&userid=123" http://"""+localip+""":9999/xiaoxin/config<br>
        <br>
 
     3.2.小新提交数据接口 /xiaoxin/upload<br>
@@ -158,22 +158,22 @@ def print_mobile_help():
        1. App启动后,发送userid和用户信息给服务器<br>
        2. 服务器接受后，保存信息返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=sina_123456&age=20.5&gender=1&name=xxx" http://"""+localip+""":9999/mobile/login<br><br>
+       curl --data "userid=123&age=20.5&gender=1&name=xxx" http://"""+localip+""":9999/mobile/login<br><br>
     3.1.用户绑定小新 /mobile/bind<br>
        1. 发送userid和sn给服务器<br>
        2. 服务器接受后，保存信息返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=sina_123456&sn=111" http://"""+localip+""":9999/mobile/bind<br><br>
+       curl --data "userid=123&sn=111" http://"""+localip+""":9999/mobile/bind<br><br>
     3.2.用户解除绑定小新 /mobile/unbind<br>
        1. 发送userid和sn给服务器<br>
        2. 服务器接受后，返回Fail或Ok<br>
        3.测试例子：<br>
-       curl --data "userid=sina_123456&sn=111" http://"""+localip+""":9999/mobile/unbind<br><br>
+       curl --data "userid=123&sn=111" http://"""+localip+""":9999/mobile/unbind<br><br>
     3.2.用户查询小新列表 /mobile/query_bindlist<br>
        1. 发送userid给服务器<br>
        2. 服务器接受后，返回Fail或列表信息<br>
        3.测试例子：<br>
-       curl --data "userid=sina_123456" http://"""+localip+""":9999/mobile/query_bindlist<br>  <br>
+       curl --data "userid=123" http://"""+localip+""":9999/mobile/query_bindlist<br>  <br>
     3.3.获取小新数据 /mobile/getxiaoxin<br>
        1. 发送sn信息给服务器<br>
        2. 服务器接受后，回Fail或小新信息<br>
