@@ -14,7 +14,7 @@ from hashlib import md5
 from peewee import *
 from log import info,debug,log
 from config import localip
-
+import uuid
 
 # config - aside from our database, the rest is for use by Flask
 DATABASE = 'xiaoxin.db'
@@ -273,6 +273,11 @@ def mobile_login(form):
        
         _userid =getformValue(form,"userid")
         user = User.get_or_create(userid=_userid)
+        if  user.xiaoxins.count() ==0:
+            xx = Xiaoxin.get_or_create(sn=uuid.uuid4())
+            user_xiaoxin = XiaoxinUser.get_or_create(user=user,xiaoxin=xx)
+            user_xiaoxin.save()
+            
         user.save()
         return "Ok"
     except Exception as e:
