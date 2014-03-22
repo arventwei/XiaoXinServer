@@ -320,7 +320,7 @@ def mobile_getxiaoxin(form):
     try:
         _sn = getformValue(form,"sn")
         xx = Xiaoxin.get(Xiaoxin.sn == _sn)
-        return "temp=%g&humi=%g&pm25=%g&switch=%d&speed=%d&last_upload_time=%g" % (xx.temp,xx.humi,xx.pm25,xx.switch,xx.speed,xx.last_upload_time);
+        return "name=%s&temp=%g&humi=%g&pm25=%g&switch=%d&speed=%d&last_upload_time=%d" % (xx.name,xx.temp,xx.humi,xx.pm25,xx.switch,xx.speed,int(xx.last_upload_time));
     except Exception as e:
         debug(e)
         
