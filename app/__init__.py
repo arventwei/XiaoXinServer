@@ -309,6 +309,7 @@ def mobile_query_bindlist(form):
         for xx_usr in usr.xiaoxins:
             
             ret+="&sn%d=%s" % (i,xx_usr.xiaoxin.sn)
+            i=i+1
         return ret
     except Exception as e:
         debug(e)
