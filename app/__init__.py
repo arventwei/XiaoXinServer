@@ -179,16 +179,16 @@ def print_mobile_help():
        2. 服务器接受后，回Fail或小新信息<br>
        3.测试例子：<br>
        curl --data "sn=111" http://"""+localip+""":9999/mobile/getxiaoxin<br><br>
-    3.4.设置小新开关 /mobile/setxiaoxi_switch<br>
+    3.4.设置小新开关 /mobile/setxiaoxin_switch<br>
        1. 发送sn信息给服务器<br>
        2. 服务器接受后，回Fail或小新信息<br>
        3.测试例子：<br>
-       curl --data "sn=111&switch=1" http://"""+localip+""":9999/mobile/setxiaoxi_switch<br><br>
-    3.5.设置小新速度 /mobile/setxiaoxi_speed<br>
+       curl --data "sn=111&switch=1" http://"""+localip+""":9999/mobile/setxiaoxin_switch<br><br>
+    3.5.设置小新速度 /mobile/setxiaoxin_speed<br>
        1. 发送sn信息给服务器<br>
        2. 服务器接受后，回Fail或小新信息<br>
        3.测试例子：<br>
-       curl --data "sn=111&speed=1" http://"""+localip+""":9999/mobile/setxiaoxi_speed<br><br>
+       curl --data "sn=111&speed=1" http://"""+localip+""":9999/mobile/setxiaoxin_speed<br><br>
     """;
     
     return ret;
@@ -339,7 +339,7 @@ def mobile_getxiaoxin(form):
     return "Fail"
     
     
-def mobile_setxiaoxi_switch(form):
+def mobile_setxiaoxin_switch(form):
     try:
         _sn = getformValue(form,"sn")
         _switch = getformValue(form,"switch")
@@ -353,7 +353,7 @@ def mobile_setxiaoxi_switch(form):
 
     return "Fail"
 
-def mobile_setxiaoxi_speed(form):
+def mobile_setxiaoxin_speed(form):
     try:
         _sn = getformValue(form,"sn")
         _speed = getformValue(form,"speed")
@@ -385,8 +385,8 @@ def route_mobile(action):
         return mobile_unbind(request.form)
     elif action=="query_bindlist":
         return mobile_query_bindlist(request.form)
-    elif action=="setxiaoxi_switch":
-        return mobile_setxiaoxi_switch(request.form)
+    elif action=="setxiaoxin_switch":
+        return mobile_setxiaoxin_switch(request.form)
     elif action=="setxiaoxin_speed":
-        return mobile_setxiaoxi_speed(request.form)
+        return mobile_setxiaoxin_speed(request.form)
     return "Fail"
