@@ -40,10 +40,11 @@ class Xiaoxin(Model):
     temp = FloatField(default=20)
     humi = FloatField(default=20)
     pm25 = FloatField(default=20)
+    form = FloatField(default=1)
     last_upload_time   = FloatField(default=time.time())
     
     #set by mobile, get by xiaoxin
-    switch = BooleanField(default=True)
+    switch = IntegerField(default=1)
     speed  = IntegerField(default=1)
     class Meta:
         database = db
@@ -133,10 +134,10 @@ def print_xiaoxin_help():
     3.2.小新提交数据接口 /xiaoxin/upload<br>
        1. 小新启动后，检测已经配置过,(sn不为空)<br>
        2. 尝试连接WIFI网络。如果连接不上，尝试连接固定的手机WIFI入口。<br>
-       3. 手机的WIFI入口固定为 name:xiaoxin_mobile   password:1234$#@!xiaoxin<br>
-       4.连接到网络后，发送信息给服务器，主要是，温度(temp),湿度(humi),pm25(pm25)<br>
+       3. 手机的WIFI入口固定为 name:xiaoxin   password:1234567890<br>
+       4.连接到网络后，发送信息给服务器，主要是，温度(temp),湿度(humi),pm25(pm25),甲醛(form)<br>
        5.测试例子：<br>
-       curl --data "sn=111&temp=20.5&humi=30&pm25=100" http://"""+localip+""":9999/xiaoxin/upload<br>
+       curl --data "sn=111&temp=20.5&humi=30&pm25=100&form=33" http://"""+localip+""":9999/xiaoxin/upload<br>
        <br>
     3.3.小新查询状态接口 /xiaoxin/status<br>
        1. 返回是否开关，和风速信息 格式如: switch=0&speed=1<br>
@@ -252,6 +253,7 @@ def xiaoxin_upload(form):
         _temp =getformValue(form,"temp")
         _humi =getformValue(form,"humi")
         _pm25 =getformValue(form,"pm25")
+        _form =getformValue(form,"form")
         
     
         xiaoxin = Xiaoxin.get_or_create(sn = _sn)
@@ -259,6 +261,7 @@ def xiaoxin_upload(form):
         xiaoxin.temp = _temp
         xiaoxin.humi = _humi
         xiaoxin.pm25 = _pm25
+        xiaoxin.form = _form
         xiaoxin.last_upload_time = time.time()
         xiaoxin.save()
         return "Ok"
@@ -336,7 +339,7 @@ def mobile_getxiaoxin(form):
     try:
         _sn = getformValue(form,"sn")
         xx = Xiaoxin.get(Xiaoxin.sn == _sn)
-        return "name=%s&temp=%g&humi=%g&pm25=%g&switch=%d&speed=%d&last_upload_time=%d" % (xx.name,xx.temp,xx.humi,xx.pm25,xx.switch,xx.speed,int(xx.last_upload_time));
+        return "name=%s&temp=%g&humi=%g&pm25=%g&switch=%d&speed=%d&form=%g&last_upload_time=%d" % (xx.name,xx.temp,xx.humi,xx.pm25,xx.switch,xx.speed,xx.form,int(xx.last_upload_time));
     except Exception as e:
         debug(e)
         
