@@ -190,6 +190,11 @@ def print_mobile_help():
        2. 服务器接受后，回Fail或小新信息<br>
        3.测试例子：<br>
        curl --data "sn=111&speed=1" http://"""+localip+""":9999/mobile/setxiaoxin_speed<br><br>
+ 3.6.设置小新名字 /mobile/setxiaoxin_name<br>
+       1. 发送sn信息给服务器<br>
+       2. 服务器接受后，回Fail或小新信息<br>
+       3.测试例子：<br>
+       curl --data "sn=111&name=xxx" http://"""+localip+""":9999/mobile/setxiaoxin_speed<br><br>
     """;
     
     return ret;
@@ -197,7 +202,9 @@ def getformValue(form,name):
     if name not in form.keys():
         debug(name+" is null");
         raise Exception(name+" is null")
-        debug("s");
+    if len(form[name])==0:
+    	return "0";
+     
     return form[name]
 @app.route('/xiaoxin/<action>', methods=['GET', 'POST'])
 def route_xiaoxin(action):
@@ -303,6 +310,20 @@ def mobile_bind(form):
         
     return "Fail"
 
+def mobile_rename(form):
+    try:
+        _sn = getformValue(form,"sn")
+        _name =getformValue(form,"name")
+ 
+        xx = Xiaoxin.get(Xiaoxin.sn == _sn)
+        xx.name = _name;
+        xx.save();
+
+        return "Ok"
+    except Exception as e:
+        debug(e)
+        
+    return "Fail"
 def mobile_unbind(form):
     try:
         _sn = getformValue(form,"sn")
@@ -397,4 +418,7 @@ def route_mobile(action):
         return mobile_setxiaoxin_switch(request.form)
     elif action=="setxiaoxin_speed":
         return mobile_setxiaoxin_speed(request.form)
+    elif action=="setxiaoxin_name":
+        return mobile_rename(request.form)
+    
     return "Fail"
